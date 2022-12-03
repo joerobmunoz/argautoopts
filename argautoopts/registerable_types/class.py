@@ -17,10 +17,10 @@ class ClassType(RegisterableType):
         Returns:
             Callable[[], str]: A callback to fetch the name
         """
-        return lambda obj: obj.__name__
+        return obj.__name__
     
     def get_args(self, obj: type) -> List[RegistryArg]:
-        """Gets the arguments
+        """Gets the registered type arguments
         """
         signature = inspect.signature(obj)
         
