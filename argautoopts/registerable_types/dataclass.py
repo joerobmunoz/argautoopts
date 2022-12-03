@@ -1,0 +1,1 @@
+raise NotImplementedError("Data classes are not implemented")
