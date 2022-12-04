@@ -7,7 +7,7 @@ class RegistryArg(NamedTuple):
     value:Any        # Default signature value or set after user-supplied
     has_default:bool # Flag for whether it has a signature default
 
-class RegisterableType(ABC):
+class RegisterableType(object):
     """New types must implement the following interfaces to be registerable.
     To implement a new type, simply inherit from this base class.
     """

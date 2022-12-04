@@ -2,8 +2,7 @@ import inspect
 
 from typing import Any, List
 
-from ..decorate import RegisterableType
-from ..register import RegistryArg
+from ..register import RegistryArg, RegisterableType
 
 class ClassType(RegisterableType):
     def is_of_type(self, x:Any) -> bool:
