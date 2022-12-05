@@ -1,4 +1,6 @@
+from collections import namedtuple
 import unittest
+
 
 # Example invocation:
 # 1. Decorate class
@@ -9,14 +11,23 @@ import unittest
 class TestDecoratedClassShowsAsCLIOpts(unittest.TestCase):
     def test_class_args_registered(self):
         from .mocks.decorators import DummyClass
+        from argautoopts.decorate import OBJECT_REGISTRATION
         
-        pass
+        self.assertTrue(DummyClass.__name__ in OBJECT_REGISTRATION)
+        item = OBJECT_REGISTRATION[DummyClass.__name__]
+        self.assertTrue(len(item.named_args) == 1)
         
     def test_namedtuple(self):
-        pass
-    
-    def test_class(self):
-        pass
+        from argautoopts.decorate import register_opts, OBJECT_REGISTRATION
+        
+        registered_named_tuple = register_opts(namedtuple('TestT', 'test_num', defaults=(1,)))
+        self.assertTrue('TestT' in OBJECT_REGISTRATION)
+        item = OBJECT_REGISTRATION['TestT']
+        
+        self.assertTrue(len(item.named_args) == 1)
+        self.assertTrue(item.named_args[0].arg_name == 'test_num')
+        self.assertTrue(item.named_args[0].value == 1)
+        self.assertTrue(item.named_args[0].has_default)
     
     def test_dataclass(self):
         pass

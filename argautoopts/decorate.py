@@ -15,7 +15,6 @@ def register_opts(
     
     _type_is_registerable = partial(type_is_registerable, optionable_obj)
     reg_types = list(filter(_type_is_registerable, REGISTERABLE_TYPES))
-    import pdb;pdb.set_trace()
     
     # Registration assertions
     if len(reg_types) > 1:
