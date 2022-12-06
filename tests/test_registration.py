@@ -30,8 +30,7 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         self.assertTrue(item.named_args[0].has_default)
     
     def test_dataclass(self):
-        pass
-        
+        pass        
 
 if __name__ == '__main__':
     unittest.main()
