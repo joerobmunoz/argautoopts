@@ -15,7 +15,7 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         
         self.assertTrue(DummyClass.__name__ in OBJECT_REGISTRATION)
         item = OBJECT_REGISTRATION[DummyClass.__name__]
-        self.assertTrue(len(item.named_args) == 1)
+        self.assertTrue(len(item.named_args) == 2)
         
     def test_namedtuple(self):
         from argautoopts.decorate import register_opts, OBJECT_REGISTRATION

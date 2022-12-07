@@ -9,14 +9,11 @@ from tests.mocks.decorators import DummyClass
 class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def setUp(self):
         self.registered_dummy_class = OBJECT_REGISTRATION[DummyClass.__name__]
+        self.parser = argparse.ArgumentParser()
+        self.parser = extend_parser(self.parser, OBJECT_REGISTRATION)
         
-    def test_parser(self):
-        parser = parser = argparse.ArgumentParser()
-        parser = extend_parser(parser, OBJECT_REGISTRATION)
-        
-        parser.print_help()
-        parsed = parser.parse_args(['DummyClass', '--test_num', '5'])
-        import pdb;pdb.set_trace()
+    def test_parser_help(self):
+        parsed = self.parser.parse_args(['DummyClass', '-h'])
         
     def test_cli_requires_dummy(self):
         """When configured as a CLI, it should show Dummy Class options
