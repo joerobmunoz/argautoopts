@@ -13,7 +13,10 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         self.parser = extend_parser(self.parser, OBJECT_REGISTRATION)
         
     def test_parser_help(self):
-        parsed = self.parser.parse_args(['DummyClass', '-h'])
+        """Help flag calls sys exit
+        """
+        command_with_help_flag = lambda: self.parser.parse_args(['DummyClass', '-h'])
+        self.assertRaises(SystemExit, command_with_help_flag)
         
     def test_cli_requires_dummy(self):
         """When configured as a CLI, it should show Dummy Class options
