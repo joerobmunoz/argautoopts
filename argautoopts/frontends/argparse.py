@@ -4,6 +4,19 @@ import inspect
 from typing import Dict, List
 
 from ..register import RegistryItem
+from ..decorate import OBJECT_REGISTRATION
+
+def create_parser(*args, **kwargs):
+    """Create a simple parser object with registered objects
+            args and kwargs are passed to the ArgumentParser __init__
+            method
+
+    Returns:
+        argparse.ArgumentParser: Argparse parser object with registrations
+    """
+    parser = argparse.ArgumentParser(*args, **kwargs)
+    parser = extend_parser(parser, OBJECT_REGISTRATION)
+    return parser
 
 def extend_parser(parser: argparse.ArgumentParser,
                   OBJECT_REGISTRATION: Dict[str, RegistryItem],
@@ -17,22 +30,23 @@ def extend_parser(parser: argparse.ArgumentParser,
         argparse.ArgumentParser: an argparse parser
     """
     
+    subparser = parser.add_subparsers(title='Define dependencies')
     for class_key, registry_item in OBJECT_REGISTRATION.items():
         # each DI item gets its own group
-        subparsers = parser.add_subparsers(title='Define dependencies')
+        
         _class_parser_desc = f'Parameter namespace for class {class_key}'
-        _class_parser = subparsers.add_parser(class_key,
+        _class_parser = subparser.add_parser(class_key,
                                               description=_class_parser_desc,
                                               )
         
         for reg_arg in registry_item.named_args:
             help_str = f'{reg_arg.arg_name} parameter'
             a_dict = {'help': f'{reg_arg.arg_name} parameter',
-                    #   'dest': f'{class_key}.{reg_arg.arg_name}',
                       }
+            
             if reg_arg.has_default:
-                help_str += '. Default: {reg_arg.value}'
                 a_dict['default'] = reg_arg.value
+                a_dict['help'] += f' (Default: "{reg_arg.value}")'
                 
             if reg_arg.type != inspect.Parameter.empty:
                 a_dict['type'] = reg_arg.type

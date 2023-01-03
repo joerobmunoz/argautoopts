@@ -1,17 +1,28 @@
 from functools import partial
-from dataclasses import dataclass
 from typing import NamedTuple, Union, Optional, Any
 
 from .register import (
     RegisterableType, RegistryItem)
 
+from .registerable_types import *
+
 REGISTERABLE_TYPES = RegisterableType.__subclasses__()
 OBJECT_REGISTRATION = {}
 
 def register_opts(
-    optionable_obj: Union[dataclass, object, NamedTuple],
+    optionable_obj: Union[object, NamedTuple],
     name: Optional[str] = None,
-    ):
+    ) -> None:
+    """_summary_
+
+    Args:
+        optionable_obj (Union[object, NamedTuple]): A decorated type to register
+        name (Optional[str], optional): Override the type name to be registered.
+                Defaults to None.
+
+    Raises:
+        ValueError: validation errors for registered types
+    """
     
     _type_is_registerable = partial(type_is_registerable, optionable_obj)
     reg_types = list(filter(_type_is_registerable, REGISTERABLE_TYPES))
