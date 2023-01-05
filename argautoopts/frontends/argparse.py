@@ -5,6 +5,7 @@ from typing import Dict, List
 
 from ..register import RegistryItem
 from ..decorate import OBJECT_REGISTRATION
+from ..resolver import IOCResolver
 
 def create_parser(*args, **kwargs):
     """Create a simple parser object with registered objects
@@ -41,12 +42,11 @@ def extend_parser(parser: argparse.ArgumentParser,
         
         for reg_arg in registry_item.named_args:
             help_str = f'{reg_arg.arg_name} parameter'
-            a_dict = {'help': f'{reg_arg.arg_name} parameter',
-                      }
+            a_dict = { 'help': {help_str} }
             
             if reg_arg.has_default:
                 a_dict['default'] = reg_arg.value
-                a_dict['help'] += f' (Default: "{reg_arg.value}")'
+                a_dict['help'] = f'{help_str}. (Default: "{reg_arg.value}")'
                 
             if reg_arg.type != inspect.Parameter.empty:
                 a_dict['type'] = reg_arg.type
@@ -54,3 +54,11 @@ def extend_parser(parser: argparse.ArgumentParser,
             _class_parser.add_argument(f'--{reg_arg.arg_name}', **a_dict)
             
     return parser
+
+def resolver_from_parser(parser: argparse.ArgumentParser,) -> IOCResolver:
+    """Create a fully-registered resolver object from the parser
+
+    Args:
+        parser (argparse.ArgumentParser): _description_
+    """
+    raise NotImplementedError

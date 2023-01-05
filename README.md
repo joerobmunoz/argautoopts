@@ -1,10 +1,13 @@
 ### [Under Construction: 12/2/2022]
 
+TODO: How to have multiple subparsers invoked at the same time?
+
 Dev areas:
 - [ ] registration hooks
 - [ ] user definition
 - [ ] resolution engine
 - [ ] resolution api
+- [ ] support list parameters
 
 # Example Usage
 

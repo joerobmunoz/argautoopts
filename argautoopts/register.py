@@ -1,4 +1,4 @@
-from abc import ABC, ABCMeta, abstractmethod, abstractclassmethod
+from abc import ABC, abstractclassmethod
 from typing import Any, List, NamedTuple
 
 class RegistryArg(NamedTuple):
@@ -35,3 +35,6 @@ class RegistryItem(NamedTuple):
     reg_type:RegisterableType
     type: Any
     named_args:List[RegistryArg]
+    
+def type_is_registerable(obj: Any, t: RegisterableType) -> bool:
+    return t.is_of_type(obj)

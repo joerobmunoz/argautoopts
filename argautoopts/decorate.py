@@ -2,7 +2,7 @@ from functools import partial
 from typing import NamedTuple, Union, Optional, Any
 
 from .register import (
-    RegisterableType, RegistryItem)
+    RegisterableType, RegistryItem, type_is_registerable)
 
 from .registerable_types import *
 
@@ -52,6 +52,3 @@ def register_opts(
     OBJECT_REGISTRATION[name] = item
 
     return optionable_obj
-
-def type_is_registerable(obj: Any, t: RegisterableType) -> bool:
-    return t.is_of_type(obj)
