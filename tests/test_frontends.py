@@ -12,10 +12,10 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         self.parser = argparse.ArgumentParser()
         self.parser = extend_parser(self.parser, OBJECT_REGISTRATION)
         
-    def test_parser_help(self):
-        """Help flag calls sys exit
-        """
-        command_with_help_flag = lambda: self.parser.parse_args(['DummyClass', '-h'])
+    # def test_parser_help(self):
+    #     """Help flag calls sys exit
+    #     """
+    #     command_with_help_flag = lambda: self.parser.parse_args(['DummyClass', '-h'])
         # self.assertRaises(SystemExit, command_with_help_flag)
         
     def test_argparse_supports_multiple_sub_parsers(self):
@@ -26,9 +26,8 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def test_cli_requires_dummy(self):
         """When configured as a CLI, it should show Dummy Class options
         """
-        breakpoint()
-        # self.parser.print_help()
-        pass
+        _h = self.parser.format_help()
+        self.assertTrue(DummyClass.__name__ in _h)
         
     def test_config_requires_dummy(self):
         """When configured as a config file input, it should show Dummy Class options
