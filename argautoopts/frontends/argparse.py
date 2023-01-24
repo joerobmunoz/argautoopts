@@ -19,6 +19,29 @@ def create_parser(*args, **kwargs):
     parser = extend_parser(parser, OBJECT_REGISTRATION)
     return parser
 
+def nested_parse(args, subcommands):
+    """Parse nested commands independently from normal argparse parse.
+
+    Args:
+        args (_type_): cli args
+        subcommands (_type_): subcommands to strip
+
+    Returns:
+        argparse command: commands
+    """
+    cmds = []
+    cmd = None
+    for arg in args[1:]:
+        if arg in (subcommands):
+            if cmd is not None:
+                cmds.append(cmd)
+            cmd = [arg]
+        else:
+            cmd.append(arg)
+    cmds.append(cmd)
+    return cmds
+
+
 def extend_parser(parser: argparse.ArgumentParser,
                   OBJECT_REGISTRATION: Dict[str, RegistryItem],
                   ) -> argparse.ArgumentParser:
