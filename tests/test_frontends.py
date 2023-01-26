@@ -1,10 +1,11 @@
+from sys import argv
 import unittest, argparse
 
 from typing import List
 
 from argautoopts.decorate import OBJECT_REGISTRATION
 from argautoopts.frontends.argparse import extend_parser
-from tests.mocks.decorators import DummyClass
+from tests.mocks.decorators import DummyClass, DummyClass2
 
 class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def setUp(self):
@@ -15,12 +16,13 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
     # def test_parser_help(self):
     #     """Help flag calls sys exit
     #     """
-    #     command_with_help_flag = lambda: self.parser.parse_args(['DummyClass', '-h'])
-        # self.assertRaises(SystemExit, command_with_help_flag)
+    #     command_with_help_flag, cmds = lambda: self.parser.parse_args(['DummyClass', '-h'])
+    #     self.assertRaises(SystemExit, command_with_help_flag)
         
-    def test_argparse_supports_multiple_sub_parsers(self):
+    def test_argparse_shows_multiple_sub_parsers(self):
         """When multiple classes ars registered, accept multiple groups
         """
+        _h = self.parser.format_help()
         pass
         
     def test_cli_requires_dummy(self):
@@ -29,10 +31,26 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         _h = self.parser.format_help()
         self.assertTrue(DummyClass.__name__ in _h)
         
-    def test_config_requires_dummy(self):
-        """When configured as a config file input, it should show Dummy Class options
+    def test_cli_parses_subcommands(self):
+        """CLI can recognize 2 DI classes at once
         """
-        pass
+        _cmd = ['DummyClass', '--test_num=1', '--test_str=test1b',
+                'DummyClass2', '--test_num=2', '--test_str=test2b']
+        rest = _cmd
+        while rest:
+            [args, rest] = self.parser.parse_known_args(rest)
+            print(args)
+            print(rest)
+            breakpoint()
+
+
+        # args = self.parser.parse_args(_cmd)
+        # self.assertTrue(args.DummyClass)
+        
+    # def test_config_requires_dummy(self):
+    #     """When configured as a config file input, it should show Dummy Class options
+    #     """
+    #     pass
     
 def parse_args(args: List[str],
                parser: argparse.ArgumentParser=None,
@@ -52,8 +70,8 @@ def parse_args(args: List[str],
         parser = argparse.ArgumentParser()
     
     parser = extend_parser(parser, OBJECT_REGISTRATION)
-    
-    return parser.parse_args(args)
+    return parser
+    # return parser.parse_args(args)
     
 if __name__ == '__main__':
     unittest.main()
