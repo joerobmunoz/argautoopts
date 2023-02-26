@@ -41,7 +41,10 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
             [args, rest] = self.parser.parse_known_args(rest)
             print(args)
             print(rest)
+            print(print(self.parser.format_help()))
             breakpoint()
+            
+        # <Class> --opt --opt
 
 
         # args = self.parser.parse_args(_cmd)

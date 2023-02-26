@@ -44,6 +44,10 @@ def create_parser(*args, **kwargs):
 #     cmds.append(cmd)
 #     return cmds
 
+def parse_deps(parser):
+    args = parser.parse.args()
+    breakpoint()
+
 def extend_parser(parser: argparse.ArgumentParser,
                   OBJECT_REGISTRATION: Dict[str, RegistryItem],
                   ) -> argparse.ArgumentParser:
@@ -55,30 +59,83 @@ def extend_parser(parser: argparse.ArgumentParser,
     Returns:
         argparse.ArgumentParser: an argparse parser
     """
-    # parser[__EXT_SUBCMD_STORAGE__] = defaultdict(None)
     
-    subparser = parser.add_subparsers(title='Define dependencies')
     for class_key, registry_item in OBJECT_REGISTRATION.items():
         # each DI item gets its own group
         _class_parser_desc = f'Parameter namespace for class {class_key}'
-        _class_parser = subparser.add_parser(class_key,
-                                              description=_class_parser_desc,
-                                              )
-        
+        def _reflected_container_type(s):
+            "param1=val,param2=val"
+            try:
+                kv_params = map(s.split(','))
+                obj_injs = dict()
+                for k,v in kv_params.split('='):
+                    obj_injs[k] = v
+                return obj_injs
+            except:
+                raise argparse.ArgumentTypeError(f"""Class arguments must be of format: \
+                    --{class_key} 
+                    """)
+                
+        cls_help=f"{class_key} parameters:\n"
         for reg_arg in registry_item.named_args:
-            help_str = f'{reg_arg.arg_name} parameter'
-            a_dict = { 'help': {help_str} }
+            # cls_help = f'{reg_arg.arg_name} parameter'
+            # a_dict = { 'help': {help_str} }
             
-            if reg_arg.has_default:
-                a_dict['default'] = reg_arg.value
-                a_dict['help'] = f'{help_str}. (Default: "{reg_arg.value}")'
+            # if reg_arg.has_default:
+            #     a_dict['default'] = reg_arg.value
+            #     a_dict['help'] = f'{help_str}. (Default: "{reg_arg.value}")'
                 
             if reg_arg.type != inspect.Parameter.empty:
-                a_dict['type'] = reg_arg.type
+                cls_help += f'{reg_arg.arg_name} ({str(reg_arg.type)}) parameter.'
+            else:
+                cls_help += f'{reg_arg.arg_name} parameter.'
             
-            _class_parser.add_argument(f'--{reg_arg.arg_name}', **a_dict)
+            if reg_arg.has_default:
+                cls_help += f' (Default: "{reg_arg.value}")'
+            cls_help += '\n'
             
+        #     _class_parser.add_argument(f'--{reg_arg.arg_name}', **a_dict)
+
+        parser.add_argument(
+            f'--{class_key}',
+            help = cls_help,
+            # help=f"{class_key} parameters",
+            dest = f"{class_key}",
+            type = _reflected_container_type, 
+            nargs = len(registry_item.named_args))
+        
+    # TODO: Strict/required storage in dict
+    
     return parser
+        
+    # parser[__EXT_SUBCMD_STORAGE__] = defaultdict(None)
+    
+    # subparser = parser.add_subparsers(title='Define dependencies')
+    # for class_key, registry_item in OBJECT_REGISTRATION.items():
+    #     # each DI item gets its own group
+    #     _class_parser_desc = f'Parameter namespace for class {class_key}'
+    #     _class_parser = subparser.add_parser(class_key,
+    #                                           description=_class_parser_desc,
+    #                                           )
+        
+    #     for reg_arg in registry_item.named_args:
+    #         help_str = f'{reg_arg.arg_name} parameter'
+    #         a_dict = { 'help': {help_str} }
+            
+    #         if reg_arg.has_default:
+    #             a_dict['default'] = reg_arg.value
+    #             a_dict['help'] = f'{help_str}. (Default: "{reg_arg.value}")'
+                
+    #         if reg_arg.type != inspect.Parameter.empty:
+    #             a_dict['type'] = reg_arg.type
+            
+    #         _class_parser.add_argument(f'--{reg_arg.arg_name}', **a_dict)
+            
+    # # Augment parser to support nested subparsers
+    # parser.parse_deps = parse_deps
+    # return parser
+    
+    
     
     # old_parse_args = parser.parse_args
 
@@ -89,7 +146,6 @@ def extend_parser(parser: argparse.ArgumentParser,
     # return parser
             # parser[__EXT_SUBCMD_STORAGE__][class_key] = a_dict
             
-    # Override `parse_args` to support nested subparsers
     # _parse = parser.parse_args
     # parser.parse_args = nested_parse
     
