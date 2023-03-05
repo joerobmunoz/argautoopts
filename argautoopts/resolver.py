@@ -6,7 +6,13 @@ from .register import RegistryItem, type_is_registerable
 from .decorate import REGISTERABLE_TYPES, OBJECT_REGISTRATION
 
 
-class ResolveException(Exception):
+class ArgAutoOptsException(Exception):
+    pass
+
+class ResolveException(ArgAutoOptsException):
+    pass
+
+class RegistrationException(ArgAutoOptsException):
     pass
 
 class IOCResolverType:
@@ -29,9 +35,9 @@ class IOCResolverType:
         Returns:
             IOCResolverType: The IOC Resolver object.
         """
-        # Create object from registry.
-            # TODO: This needs to be populated by a front-end here
-            
+        
+        if class_name not in OBJECT_REGISTRATION:
+            raise RegistrationException
         self._registered[class_name] = items
         return self
     
