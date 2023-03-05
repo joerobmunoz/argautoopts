@@ -6,7 +6,7 @@ from typing import Dict, List
 
 from ..register import RegistryItem
 from ..decorate import OBJECT_REGISTRATION
-from ..resolver import IOCResolver
+from ..resolver import IOCResolverType, IOC_Resolver
 
 __EXT_SUBCMD_STORAGE__ = '__ext_subcmds__'
 
@@ -21,10 +21,6 @@ def create_parser(*args, **kwargs):
     parser = argparse.ArgumentParser(*args, **kwargs)
     parser = extend_parser(parser, OBJECT_REGISTRATION)
     return parser
-
-def parse_deps(parser):
-    args = parser.parse.args()
-    breakpoint()
 
 def extend_parser(parser: argparse.ArgumentParser,
                   OBJECT_REGISTRATION: Dict[str, RegistryItem],
@@ -84,53 +80,34 @@ def extend_parser(parser: argparse.ArgumentParser,
             nargs = 1)
         
     # Override parse_args to add to container registry
-    # parser.parse_args = parse_args_decorator
+    parser.parse_args = decorate_parse_args(parser, OBJECT_REGISTRATION)
     # TODO: Strict/required storage in dict
     
     return parser
-    
-    # parser[__EXT_SUBCMD_STORAGE__] = defaultdict(None)
-    
-    # subparser = parser.add_subparsers(title='Define dependencies')
-    # for class_key, registry_item in OBJECT_REGISTRATION.items():
-    #     # each DI item gets its own group
-    #     _class_parser_desc = f'Parameter namespace for class {class_key}'
-    #     _class_parser = subparser.add_parser(class_key,
-    #                                           description=_class_parser_desc,
-    #                                           )
+
+def decorate_parse_args(parser: argparse.ArgumentParser, OBJECT_REGISTRATION: Dict[str, RegistryItem]) -> argparse.Namespace:
+    _parse_args = parser.parse_args
+    def wrapper(*args, **kwargs):
+        args = _parse_args(*args, **kwargs)
         
-    #     for reg_arg in registry_item.named_args:
-    #         help_str = f'{reg_arg.arg_name} parameter'
-    #         a_dict = { 'help': {help_str} }
+        # Register with IOC
+        _resolver = resolver_from_args(args, OBJECT_REGISTRATION)
+        
+        return args
+    return wrapper
             
-    #         if reg_arg.has_default:
-    #             a_dict['default'] = reg_arg.value
-    #             a_dict['help'] = f'{help_str}. (Default: "{reg_arg.value}")'
-                
-    #         if reg_arg.type != inspect.Parameter.empty:
-    #             a_dict['type'] = reg_arg.type
-            
-    #         _class_parser.add_argument(f'--{reg_arg.arg_name}', **a_dict)
-            
-    # # Augment parser to support nested subparsers
-    # parser.parse_deps = parse_deps
-    # return parser
-    
-        # parser[__EXT_SUBCMD_STORAGE__][class_key] = a_dict
-
-
-# def parse_args_decorator(self, *args, **kwargs):
-#     # 'self' references parser
-#     args = self.parse_args(*args, **kwargs)
-    
-#     # Register with IOC
-    
-#     return args
-            
-def resolver_from_args(parser: argparse.Namespace,) -> IOCResolver:
+def resolver_from_args(cli_args: argparse.Namespace, OBJECT_REGISTRATION: Dict[str, RegistryItem]) -> IOCResolverType:
     """Create a fully-registered resolver object from the parser
 
     Args:
         parser (argparse.ArgumentParser): _description_
     """
-    raise NotImplementedError
+    
+    for class_name in vars(cli_args):
+        # If it's a registerable type, register it
+        if class_name not in OBJECT_REGISTRATION:
+            continue
+        
+        _r = IOC_Resolver.register(class_name, getattr(cli_args, class_name))
+        
+    return _r

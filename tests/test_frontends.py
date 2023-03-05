@@ -7,6 +7,8 @@ from argautoopts.decorate import OBJECT_REGISTRATION
 from argautoopts.frontends.argparse import extend_parser
 from tests.mocks.decorators import DummyClass, DummyClass2
 
+from argautoopts.resolver import IOC_Resolver
+
 class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def setUp(self):
         self.registered_dummy_class = OBJECT_REGISTRATION[DummyClass.__name__]
@@ -37,38 +39,15 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
                 'test_num=1,test_str="test1b"',
                 '--DummyClass2',
                 'test_num=2,test_str="test2b"']
-        _args = self.parser.parse_args(_cmd)
+        args = self.parser.parse_args(_cmd)
         
-        self.assertTrue('DummyClass' in _args)
-        self.assertTrue('DummyClass2' in _args)
+        self.assertTrue('DummyClass' in args)
+        self.assertTrue('DummyClass2' in args)
             
-        # args = self.parser.parse_args(_cmd)
-        # self.assertTrue(args.DummyClass)
-        
     # def test_config_requires_dummy(self):
     #     """When configured as a config file input, it should show Dummy Class options
     #     """
     #     pass
-    
-def parse_args(args: List[str],
-               parser: argparse.ArgumentParser=None,
-               ) -> argparse.ArgumentParser:
-    """Take command line arguments and create an argparse parser. If a paser is provided, it
-    is augmented to include registered classes.
-
-    Args:
-        args (List[str]): The sys.argv[1:] args
-        parser (argparse.ArgumentParser, optional): An argparse parser. Defaults to None.
-
-    Returns:
-        argparse.ArgumentParser: An argparse parser
-    """
-    
-    if not parser:
-        parser = argparse.ArgumentParser()
-    
-    parser = extend_parser(parser, OBJECT_REGISTRATION)
-    return parser
     
 if __name__ == '__main__':
     unittest.main()
