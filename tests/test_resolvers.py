@@ -19,10 +19,14 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         class2_name = 'DummyClass2'
         class2_args = [{'test_num': '2', 'test_str': 'test2b'}]
     
-    def test_resolve_fails_when_no_args(self):
-        """The IOC resolver can resolve a dummy class object when given
-        argparse params"""
+    def test_resolve_fails_when_not_expected(self):
+        """The resolver can't create containers that aren't expected"""
         resolve_dummy_obj_fn = lambda: self.resolver.resolve(NotDecoratedClass)
+        self.assertRaises(ResolveException, resolve_dummy_obj_fn)
+        
+    def test_resolver_fails_when_not_registered(self):
+        """The resolver must have expected classes be registered first"""
+        resolve_dummy_obj_fn = lambda: self.resolver.resolve(DummyClass)
         self.assertRaises(ResolveException, resolve_dummy_obj_fn)
      
     def test_resolver_cant_register_undecorated_classes(self):

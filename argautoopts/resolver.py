@@ -58,7 +58,11 @@ class IOCResolverType:
         reg_name = reg_base_t.get_name(container_t)
         
         if reg_name not in self.expected_registry:
-            raise ResolveException(f'Object type not found in the registry')
+            raise ResolveException(f'Type was unexpected and must be registered before \
+                attempting resolution.')
+        if reg_name not in self._registered:
+            raise ResolveException(f'<{reg_name}> was expected, but must be registered \
+                by the frontend before requesting objects.')
 
 # Global resolver object, singleton
 IOC_Resolver : IOCResolverType = IOCResolverType(OBJECT_REGISTRATION)
