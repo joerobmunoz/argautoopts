@@ -22,28 +22,6 @@ def create_parser(*args, **kwargs):
     parser = extend_parser(parser, OBJECT_REGISTRATION)
     return parser
 
-# def nested_parse(args, subcommands):
-#     """Parse nested commands independently from normal argparse parse.
-
-#     Args:
-#         args (_type_): cli args
-#         subcommands (_type_): subcommands to strip
-
-#     Returns:
-#         argparse command: commands
-#     """
-#     cmds = []
-#     cmd = None
-#     for arg in args[1:]:
-#         if arg in (subcommands):
-#             if cmd is not None:
-#                 cmds.append(cmd)
-#             cmd = [arg]
-#         else:
-#             cmd.append(arg)
-#     cmds.append(cmd)
-#     return cmds
-
 def parse_deps(parser):
     args = parser.parse.args()
     breakpoint()
@@ -59,55 +37,58 @@ def extend_parser(parser: argparse.ArgumentParser,
     Returns:
         argparse.ArgumentParser: an argparse parser
     """
-    
+
     for class_key, registry_item in OBJECT_REGISTRATION.items():
-        # each DI item gets its own group
-        _class_parser_desc = f'Parameter namespace for class {class_key}'
-        def _reflected_container_type(s):
-            "param1=val,param2=val"
+        # each DI item gets its own option
+        cls_help=f"{class_key} parameters:\n"
+        expected_param_pattern = ""
+        for reg_arg in registry_item.named_args:
+            if len(expected_param_pattern) > 1:
+                expected_param_pattern += ","
+                
+            expected_param_pattern += f'{reg_arg.arg_name}='
+            expected_param_pattern += f'<{str(reg_arg.type)[8:-2]}>'
+                
+        for c, reg_arg in enumerate(registry_item.named_args):
+            if c != 0:
+                cls_help += ', '
+            if reg_arg.type != inspect.Parameter.empty:
+                cls_help += f'{reg_arg.arg_name} ({str(reg_arg.type)[8:-2]}'
+                if reg_arg.has_default:
+                    cls_help += f', default: "{reg_arg.value}"'
+                cls_help += ')'
+            else:
+                cls_help += f'{reg_arg.arg_name}'
+            
+        def _reflected_container_type(_str_arg:str):
             try:
-                kv_params = map(s.split(','))
                 obj_injs = dict()
-                for k,v in kv_params.split('='):
-                    obj_injs[k] = v
+                for _arg_str in _str_arg.split(','):
+                    k, v = _arg_str.split('=')
+                    # Strip string quotes
+                    obj_injs[k] = v.strip('\"')
                 return obj_injs
             except:
                 raise argparse.ArgumentTypeError(f"""Class arguments must be of format: \
-                    --{class_key} 
+                    --{class_key} {expected_param_pattern}
                     """)
-                
-        cls_help=f"{class_key} parameters:\n"
-        for reg_arg in registry_item.named_args:
-            # cls_help = f'{reg_arg.arg_name} parameter'
-            # a_dict = { 'help': {help_str} }
-            
-            # if reg_arg.has_default:
-            #     a_dict['default'] = reg_arg.value
-            #     a_dict['help'] = f'{help_str}. (Default: "{reg_arg.value}")'
-                
-            if reg_arg.type != inspect.Parameter.empty:
-                cls_help += f'{reg_arg.arg_name} ({str(reg_arg.type)}) parameter.'
-            else:
-                cls_help += f'{reg_arg.arg_name} parameter.'
-            
-            if reg_arg.has_default:
-                cls_help += f' (Default: "{reg_arg.value}")'
-            cls_help += '\n'
-            
-        #     _class_parser.add_argument(f'--{reg_arg.arg_name}', **a_dict)
 
         parser.add_argument(
             f'--{class_key}',
             help = cls_help,
-            # help=f"{class_key} parameters",
-            dest = f"{class_key}",
+            metavar = expected_param_pattern,
+            # Assert unique class names
+            dest = class_key,
             type = _reflected_container_type, 
-            nargs = len(registry_item.named_args))
+            required = False,
+            nargs = 1)
         
+    # Override parse_args to add to container registry
+    # parser.parse_args = parse_args_decorator
     # TODO: Strict/required storage in dict
     
     return parser
-        
+    
     # parser[__EXT_SUBCMD_STORAGE__] = defaultdict(None)
     
     # subparser = parser.add_subparsers(title='Define dependencies')
@@ -135,24 +116,18 @@ def extend_parser(parser: argparse.ArgumentParser,
     # parser.parse_deps = parse_deps
     # return parser
     
-    
-    
-    # old_parse_args = parser.parse_args
+        # parser[__EXT_SUBCMD_STORAGE__][class_key] = a_dict
 
-    # def overloaded_parse_args(*args, **kwargs):
-    #     """Remove DI sub-cmds before normal parse"""
-    #     cmds = nested_parse(args, kwargs)
+
+# def parse_args_decorator(self, *args, **kwargs):
+#     # 'self' references parser
+#     args = self.parse_args(*args, **kwargs)
     
-    # return parser
-            # parser[__EXT_SUBCMD_STORAGE__][class_key] = a_dict
+#     # Register with IOC
+    
+#     return args
             
-    # _parse = parser.parse_args
-    # parser.parse_args = nested_parse
-    
-    # Parent parser, sub-commands
-    # return parser, class_key
-
-def resolver_from_parser(parser: argparse.ArgumentParser,) -> IOCResolver:
+def resolver_from_args(parser: argparse.Namespace,) -> IOCResolver:
     """Create a fully-registered resolver object from the parser
 
     Args:

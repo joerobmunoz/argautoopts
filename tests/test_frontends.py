@@ -13,17 +13,16 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         self.parser = argparse.ArgumentParser()
         self.parser = extend_parser(self.parser, OBJECT_REGISTRATION)
         
-    # def test_parser_help(self):
-    #     """Help flag calls sys exit
-    #     """
-    #     command_with_help_flag, cmds = lambda: self.parser.parse_args(['DummyClass', '-h'])
-    #     self.assertRaises(SystemExit, command_with_help_flag)
+    def test_parser_help(self):
+        """Help flag calls sys exit
+        """
+        command_with_help_flag = lambda: self.parser.parse_args(['-h'])
+        self.assertRaises(SystemExit, command_with_help_flag)
         
-    def test_argparse_shows_multiple_sub_parsers(self):
+    def test_argparse_shows_multiple_dependencies(self):
         """When multiple classes ars registered, accept multiple groups
         """
         _h = self.parser.format_help()
-        pass
         
     def test_cli_requires_dummy(self):
         """When configured as a CLI, it should show Dummy Class options
@@ -34,19 +33,15 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def test_cli_parses_subcommands(self):
         """CLI can recognize 2 DI classes at once
         """
-        _cmd = ['DummyClass', '--test_num=1', '--test_str=test1b',
-                'DummyClass2', '--test_num=2', '--test_str=test2b']
-        rest = _cmd
-        while rest:
-            [args, rest] = self.parser.parse_known_args(rest)
-            print(args)
-            print(rest)
-            print(print(self.parser.format_help()))
-            breakpoint()
+        _cmd = ['--DummyClass',
+                'test_num=1,test_str="test1b"',
+                '--DummyClass2',
+                'test_num=2,test_str="test2b"']
+        _args = self.parser.parse_args(_cmd)
+        
+        self.assertTrue('DummyClass' in _args)
+        self.assertTrue('DummyClass2' in _args)
             
-        # <Class> --opt --opt
-
-
         # args = self.parser.parse_args(_cmd)
         # self.assertTrue(args.DummyClass)
         
@@ -74,7 +69,6 @@ def parse_args(args: List[str],
     
     parser = extend_parser(parser, OBJECT_REGISTRATION)
     return parser
-    # return parser.parse_args(args)
     
 if __name__ == '__main__':
     unittest.main()
