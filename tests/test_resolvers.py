@@ -42,6 +42,16 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         """All classes must be registered through controlled hooks"""
         reg_unexpected_obj_fn = lambda: self.resolver.register('BadClass', [])
         self.assertRaises(RegistrationException, reg_unexpected_obj_fn)
+        
+    def test_resolver_can_register_unsafe_dict(self):
+        """Unsafae classes must use unsafe"""
+        reg_unexpected_obj_fn = lambda: self.resolver.register(
+            'BadClass', {}, unsafe=False)
+        reg_unexpected_obj_unsafe_fn = lambda: self.resolver.register(
+            'BadClass2', {}, unsafe=True)
+        _reg = reg_unexpected_obj_unsafe_fn()
+        self.assertRaises(RegistrationException, reg_unexpected_obj_fn)
+        self.assertTrue('BadClass2' in _reg._registered)
     
     
 if __name__ == '__main__':
