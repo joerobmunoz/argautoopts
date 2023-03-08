@@ -13,22 +13,19 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         self.resolver = IOCResolverType(OBJECT_REGISTRATION)
     
     def test_supplied_class_is_registered(self):
-        """CLI can recognize 2 DI classes at once
-        """
+        """CLI can recognize 2 DI classes at once"""
         class1_name = 'DummyClass'
-        class1_args = [{'test_num': '1', 'test_str': 'test1b'}]
+        class1_args = {'test_num': '1', 'test_str': 'test1b'}
         _resolver = self.resolver.register(class1_name, class1_args)
         self.assertTrue(class1_name in self.resolver._registered)
 
     def test_resolver_can_create_registered_objects(self):
         """The IOC resolver can create objects from registered types"""
-        
         class1_name = 'DummyClass'
-        class1_args = [{'test_num': 1, 'test_str': 'test1b'}]
+        class1_args = {'test_num': 1, 'test_str': 'test1b'}
         _resolver = self.resolver.register(class1_name, class1_args)
         dummy = self.resolver.resolve(DummyClass)
-        real_obj = DummyClass(**class1_args[0])
-        breakpoint()
+        real_obj = DummyClass(**class1_args)
         self.assertTrue(dummy == real_obj)
     
     def test_resolve_fails_when_not_expected(self):

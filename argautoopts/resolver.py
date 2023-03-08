@@ -5,6 +5,7 @@ from typing import Dict, Tuple, List, Union, Any
 from .register import RegistryItem, type_is_registerable
 from .decorate import REGISTERABLE_TYPES, OBJECT_REGISTRATION
 
+__OBJ_META__ = '__obj_meta__'
 
 class ArgAutoOptsException(Exception):
     pass
@@ -21,7 +22,10 @@ class IOCResolverType:
         self.expected_registry = expected_registry
         self._registered = {}
         
-    def register(self, class_name: str, items: List[Tuple[str, Any]]) -> 'IOCResolverType':
+    def register(self, class_name: str, 
+                 items: Dict[str, Any],
+                 unsafe: bool = False,
+                 ) -> 'IOCResolverType':
         """Register a new item so that it can be resolved.
         
         This is typically called from a front-end, as arguments
@@ -31,14 +35,24 @@ class IOCResolverType:
             class_name (str): The string class to register
             items (List[str, Any]): A dictionary of parameters and their
                 values.
+            unsafe (bool): Flag allowing the registration of undecorated
+                types.
 
         Returns:
             IOCResolverType: The IOC Resolver object.
         """
         
-        if class_name not in OBJECT_REGISTRATION:
-            raise RegistrationException
-        self._registered[class_name] = items
+        if class_name not in OBJECT_REGISTRATION and not unsafe:
+            raise RegistrationException(f"You cannot register a type \
+                {class_name} because it was not ")
+
+        # Avoid polluting the front-end refs        
+        items_c = items.copy()
+
+        # If unsafe, mark as a dynamic type
+        items_c[__OBJ_META__] = { 'unsafe': unsafe }
+        self._registered[class_name] = items_c
+        
         return self
     
     def resolve(self, container_t: type):
@@ -63,6 +77,14 @@ class IOCResolverType:
         if reg_name not in self._registered:
             raise ResolveException(f'<{reg_name}> was expected, but must be registered \
                 by the frontend before requesting objects.')
+            
+        # Inflate a class with args
+        
+        # If an arg is missing and there's a default, fill it
+        
+        # If a missing arg and no default, check strict.
+        
+        # Else fail
 
 # Global resolver object, singleton
 IOC_Resolver : IOCResolverType = IOCResolverType(OBJECT_REGISTRATION)

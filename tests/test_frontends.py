@@ -35,7 +35,7 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def test_cli_parses_subcommands(self):
         """CLI can recognize 2 DI classes at once
         """
-        _cmd = ['--DummyClass',
+        _cmd = ['--DummyClass', 
                 'test_num=1,test_str="test1b"',
                 '--DummyClass2',
                 'test_num=2,test_str="test2b"']
