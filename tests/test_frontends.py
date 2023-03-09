@@ -1,13 +1,10 @@
-from sys import argv
 import unittest, argparse
 
-from typing import List
 
 from argautoopts.decorate import OBJECT_REGISTRATION
 from argautoopts.frontends.argparse import extend_parser
-from tests.mocks.decorators import DummyClass, DummyClass2
+from tests.mocks.decorators import DummyClass
 
-from argautoopts.resolver import IOC_Resolver
 
 class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def setUp(self):

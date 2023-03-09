@@ -1,8 +1,6 @@
-from collections import defaultdict
-from functools import partial
-from typing import Dict, Tuple, List, Union, Any
+from typing import Dict, Any
 
-from .register import RegistryItem, type_is_registerable
+from .register import RegistryItem
 from .decorate import REGISTERABLE_TYPES, OBJECT_REGISTRATION
 
 __OBJ_META__ = '__obj_meta__'
@@ -42,7 +40,7 @@ class IOCResolverType:
             IOCResolverType: The IOC Resolver object.
         """
         
-        if class_name not in OBJECT_REGISTRATION and not unsafe:
+        if class_name not in self.expected_registry and not unsafe:
             raise RegistrationException(f"You cannot register a type \
                 {class_name} because it was not ")
 
@@ -56,7 +54,16 @@ class IOCResolverType:
         return self
     
     def resolve(self, container_t: type):
-        """Given a type and parameters, create an object of that type"""
+        """Given a type and parameters, create an object of that type
+
+        Args:
+            container_t (type): The type to resolve. Must be decorated
+            or used in non-strict mode.
+
+        Raises:
+            ResolveException: General error with descriptor from
+                resolution failure.
+        """
         if not self.expected_registry:
             raise ResolveException("No items have been added to the registry. \
                 Please use the appropriate front-end function to add parsed \
@@ -79,43 +86,20 @@ class IOCResolverType:
                 by the frontend before requesting objects.')
             
         # Inflate a class with args
+        inflate_args = self._registered[reg_name].copy()
+        del(inflate_args[__OBJ_META__])
         
         # If an arg is missing and there's a default, fill it
+        for reg_arg in self.expected_registry[reg_name].named_args:
+            if reg_arg.arg_name not in inflate_args and \
+                not reg_arg.has_default:
+                raise ResolveException(f'Parameter {reg_arg.arg_name}' \
+                    'for type {reg_name} has no supplied or default parameter')
         
         # If a missing arg and no default, check strict.
-        
-        # Else fail
-
+        obj = self.expected_registry[reg_name].type(**inflate_args)
+        return obj
+    
 # Global resolver object, singleton
-IOC_Resolver : IOCResolverType = IOCResolverType(OBJECT_REGISTRATION)
-
 # Update must be called before you can use the registry
-
-    # parser[__EXT_SUBCMD_STORAGE__] = defaultdict(None)
-    
-    # subparser = parser.add_subparsers(title='Define dependencies')
-    # for class_key, registry_item in OBJECT_REGISTRATION.items():
-    #     # each DI item gets its own group
-    #     _class_parser_desc = f'Parameter namespace for class {class_key}'
-    #     _class_parser = subparser.add_parser(class_key,
-    #                                           description=_class_parser_desc,
-    #                                           )
-        
-    #     for reg_arg in registry_item.named_args:
-    #         help_str = f'{reg_arg.arg_name} parameter'
-    #         a_dict = { 'help': {help_str} }
-            
-    #         if reg_arg.has_default:
-    #             a_dict['default'] = reg_arg.value
-    #             a_dict['help'] = f'{help_str}. (Default: "{reg_arg.value}")'
-                
-    #         if reg_arg.type != inspect.Parameter.empty:
-    #             a_dict['type'] = reg_arg.type
-            
-    #         _class_parser.add_argument(f'--{reg_arg.arg_name}', **a_dict)
-            
-    # # Augment parser to support nested subparsers
-    # parser.parse_deps = parse_deps
-    # return parser
-    
-        # parser[__EXT_SUBCMD_STORAGE__][class_key] = a_dict
+resolver : IOCResolverType = IOCResolverType(OBJECT_REGISTRATION)

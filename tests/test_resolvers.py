@@ -3,8 +3,9 @@ import unittest
 from argautoopts.decorate import OBJECT_REGISTRATION
 from tests.mocks.decorators import DummyClass, DummyClass2, NotDecoratedClass
 
-from argautoopts.resolver import IOC_Resolver, IOCResolverType, \
+from argautoopts.resolver import IOCResolverType, \
     ResolveException, RegistrationException
+
 
 class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def setUp(self):
@@ -23,6 +24,22 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         """The IOC resolver can create objects from registered types"""
         class1_name = 'DummyClass'
         class1_args = {'test_num': 1, 'test_str': 'test1b'}
+        _resolver = self.resolver.register(class1_name, class1_args)
+        dummy = self.resolver.resolve(DummyClass)
+        real_obj = DummyClass(**class1_args)
+        self.assertTrue(dummy == real_obj)
+        
+    def test_resolver_fails_with_wrong_args(self):
+        """The resolver fails when missing required args"""
+        class1_name = 'DummyClass'
+        class1_args = {'XXXX': 1, 'test_str': 'test1b'}
+        _resolver = self.resolver.register(class1_name, class1_args)
+        self.assertRaises(ResolveException, lambda: self.resolver.resolve(DummyClass))
+        
+    def test_resolver_can_create_registered_objects_with_defaults(self):
+        """The resolver works when missing a default arg."""
+        class1_name = 'DummyClass'
+        class1_args = {'test_num': 1}
         _resolver = self.resolver.register(class1_name, class1_args)
         dummy = self.resolver.resolve(DummyClass)
         real_obj = DummyClass(**class1_args)

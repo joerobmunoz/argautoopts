@@ -6,7 +6,7 @@ from typing import Dict, List
 
 from ..register import RegistryItem
 from ..decorate import OBJECT_REGISTRATION
-from ..resolver import IOCResolverType, IOC_Resolver
+from ..resolver import IOCResolverType, resolver
 
 __EXT_SUBCMD_STORAGE__ = '__ext_subcmds__'
 
@@ -114,6 +114,6 @@ def resolver_from_args(cli_args: argparse.Namespace, OBJECT_REGISTRATION: Dict[s
         
         # Argparse uses a list of args
         _cls_args_dict = _cls_args[0]
-        _r = IOC_Resolver.register(class_name, _cls_args_dict)
+        _r = resolver.register(class_name, _cls_args_dict)
         
     return _r
