@@ -83,12 +83,12 @@ class IOCResolverType:
         reg_name = reg_base_t.get_name(container_t)
         
         if reg_name not in self.expected_registry:
-            raise ResolveException(f'Type was unexpected and must be registered before \
-                attempting resolution.')
+            raise ResolveException(f'Type was unexpected and must be registered before ' \
+                'attempting resolution.')
         if reg_name not in self._registered:
-            raise ResolveException(f'<{reg_name}> was expected, but must be registered \
-                by the frontend before requesting objects.')
-            
+            raise ResolveException(f'<{reg_name}> was expected, but must be registered ' \
+                'by the frontend before requesting objects.')
+
         # Inflate a class with args
         inflate_args = self._registered[reg_name].copy()
         del(inflate_args[__OBJ_META__])
@@ -109,7 +109,7 @@ class IOCResolverType:
             # Validate no extra params
             extra_keys = set(inflate_args) - set(expected_arg_keys)
             if len(extra_keys):
-                raise ResolveException(f'Extra keys {{extra_keys}} were supplied during registry and' \
+                raise ResolveException(f'Extra keys {extra_keys} were supplied during registry and ' \
                     'cannot be resolved. To ignore these, resolve with `ignore_extra_params=True`.')
         
         # If a missing arg and no default, check strict.
