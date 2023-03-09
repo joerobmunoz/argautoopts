@@ -35,6 +35,17 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         class1_args = {'XXXX': 1, 'test_str': 'test1b'}
         _resolver = self.resolver.register(class1_name, class1_args)
         self.assertRaises(ResolveException, lambda: self.resolver.resolve(DummyClass))
+    
+    def test_resolver_fails_with_wrong_args(self):
+        """The resolver fails with extra args by default"""
+        class1_name = 'DummyClass'
+        class1_args = {'test_num': 1, 'XXX': 'test1b'}
+        _resolver = self.resolver.register(class1_name, class1_args)
+        self.assertRaises(ResolveException, lambda: self.resolver.resolve(DummyClass, 
+                                                            ignore_extra_params=False))
+        dummy = self.resolver.resolve(DummyClass, ignore_extra_params=True)
+        real_obj = DummyClass(test_num=1)
+        self.assertTrue(dummy == real_obj)
         
     def test_resolver_can_create_registered_objects_with_defaults(self):
         """The resolver works when missing a default arg."""

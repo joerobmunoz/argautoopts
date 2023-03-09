@@ -2,7 +2,7 @@ import inspect
 
 from typing import Any, List
 
-from ..register import RegistryArg, RegisterableType
+from ..registry import RegistryArg, RegisterableType
 
 class NamedTupleType(RegisterableType):
     def is_of_type(x:Any) -> bool:

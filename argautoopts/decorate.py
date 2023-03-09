@@ -1,7 +1,7 @@
 from functools import partial
 from typing import NamedTuple, Union, Optional, Any
 
-from .register import (
+from .registry import (
     RegisterableType, RegistryItem, type_is_registerable)
 
 from .registerable_types import *

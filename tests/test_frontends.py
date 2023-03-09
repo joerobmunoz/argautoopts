@@ -10,7 +10,7 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def setUp(self):
         self.registered_dummy_class = OBJECT_REGISTRATION[DummyClass.__name__]
         self.parser = argparse.ArgumentParser()
-        self.parser = extend_parser(self.parser, OBJECT_REGISTRATION)
+        self.parser = extend_parser(self.parser)
         
     def test_parser_help(self):
         """Help flag calls sys exit

@@ -1,6 +1,6 @@
 from typing import Dict, Any
 
-from .register import RegistryItem
+from .registry import RegistryItem
 from .decorate import REGISTERABLE_TYPES, OBJECT_REGISTRATION
 
 __OBJ_META__ = '__obj_meta__'
@@ -53,17 +53,21 @@ class IOCResolverType:
         
         return self
     
-    def resolve(self, container_t: type):
+    def resolve(self, container_t: type, ignore_extra_params:bool=False):
         """Given a type and parameters, create an object of that type
 
         Args:
             container_t (type): The type to resolve. Must be decorated
-            or used in non-strict mode.
+                or used in non-strict mode.
+            ignore_extra_params (False): Do not error when discovering
+                unnecessary parameters. This may result in unintended 
+                behavior.
 
         Raises:
             ResolveException: General error with descriptor from
                 resolution failure.
         """
+        
         if not self.expected_registry:
             raise ResolveException("No items have been added to the registry. \
                 Please use the appropriate front-end function to add parsed \
@@ -95,6 +99,18 @@ class IOCResolverType:
                 not reg_arg.has_default:
                 raise ResolveException(f'Parameter {reg_arg.arg_name}' \
                     'for type {reg_name} has no supplied or default parameter')
+        
+        expected_arg_keys = map(lambda x: x.arg_name, self.expected_registry[reg_name].named_args)
+        if ignore_extra_params:
+            # Clear unexpected args
+            # keys_in_common = set(inflate_args).intersection(expected_arg_keys)
+            inflate_args = dict((k, inflate_args[k]) for k in inflate_args if k in expected_arg_keys)
+        else:
+            # Validate no extra params
+            extra_keys = set(inflate_args) - set(expected_arg_keys)
+            if len(extra_keys):
+                raise ResolveException(f'Extra keys {{extra_keys}} were supplied during registry and' \
+                    'cannot be resolved. To ignore these, resolve with `ignore_extra_params=True`.')
         
         # If a missing arg and no default, check strict.
         obj = self.expected_registry[reg_name].type(**inflate_args)

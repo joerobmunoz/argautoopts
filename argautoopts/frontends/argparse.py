@@ -4,7 +4,7 @@ import inspect
 from collections import defaultdict
 from typing import Dict, List
 
-from ..register import RegistryItem
+from ..registry import RegistryItem
 from ..decorate import OBJECT_REGISTRATION
 from ..resolver import IOCResolverType, resolver
 
@@ -19,11 +19,10 @@ def create_parser(*args, **kwargs):
         argparse.ArgumentParser: Argparse parser object with registrations
     """
     parser = argparse.ArgumentParser(*args, **kwargs)
-    parser = extend_parser(parser, OBJECT_REGISTRATION)
+    parser = extend_parser(parser)
     return parser
 
 def extend_parser(parser: argparse.ArgumentParser,
-                  OBJECT_REGISTRATION: Dict[str, RegistryItem],
                   ) -> argparse.ArgumentParser:
     """Given a parser instance, extend it with registered classes
 
