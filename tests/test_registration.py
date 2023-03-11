@@ -20,7 +20,8 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def test_namedtuple(self):
         from argautoopts.decorate import register_opts, OBJECT_REGISTRATION
         
-        _registered_named_tuple = register_opts(namedtuple('TestT', 'test_num', defaults=(1,)))
+        _named_tuple = namedtuple('TestT', 'test_num', defaults=(1,))
+        _registered_named_tuple = register_opts(_named_tuple)
         self.assertTrue('TestT' in OBJECT_REGISTRATION)
         item = OBJECT_REGISTRATION['TestT']
         

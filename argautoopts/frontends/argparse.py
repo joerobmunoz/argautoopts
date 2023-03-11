@@ -115,4 +115,5 @@ def resolver_from_args(cli_args: argparse.Namespace, OBJECT_REGISTRATION: Dict[s
         _cls_args_dict = _cls_args[0]
         _r = resolver.register(class_name, _cls_args_dict)
         
-    return _r
+    # breakpoint()
+    return resolver

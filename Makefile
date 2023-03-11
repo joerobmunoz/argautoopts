@@ -1,3 +1,3 @@
 
 run_tests:
-	PYTHONPATH=.:${PYTHONPATH} python3 -m unittest
+	PYTHONPATH=.:${PYTHONPATH} python3 -m pytest -v

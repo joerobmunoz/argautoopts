@@ -1,7 +1,15 @@
+from dataclasses import dataclass
 import unittest
 
 from argautoopts.decorate import OBJECT_REGISTRATION
-from tests.mocks.decorators import DummyClass, DummyClass2, NotDecoratedClass
+from tests.mocks.decorators import (
+        DummyClass,
+        DummyClass2,
+        NotDecoratedClass,
+        DummyDataClass,
+        DummyTypedNamedTuple,
+        DummyInlineNamedTuple,
+)
 
 from argautoopts.resolver import IOCResolverType, \
     ResolveException, RegistrationException
@@ -81,6 +89,33 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         self.assertRaises(RegistrationException, reg_unexpected_obj_fn)
         self.assertTrue('BadClass2' in _reg._registered)
     
+    def test_dataclasses_resolve(self):
+        class1_name = 'TestDataClass'
+        class1_args = {'basic_int': 1}
+        _resolver = self.resolver.register(class1_name, class1_args)
+        dummy = self.resolver.resolve(DummyDataClass)
+        real_obj = DummyDataClass(**class1_args)
+        self.assertTrue(dummy == real_obj)
+    
+    def test_inline_namedtuples_resolve(self):
+        class1_name = 'DummyInlineNamedTuple'
+        class1_args = {'basic_int': 1}
+        _resolver = self.resolver.register(class1_name, class1_args)
+        dummy = self.resolver.resolve(DummyInlineNamedTuple)
+        real_obj = DummyInlineNamedTuple(**class1_args)
+        self.assertTrue(dummy == real_obj)
+    
+    def test_typed_namedtuples_resolve(self):
+        class1_name = 'DummyTypedNamedTuple'
+        class1_args = {'basic_int': 1}
+        _resolver = self.resolver.register(class1_name, class1_args)
+        dummy = self.resolver.resolve(DummyTypedNamedTuple)
+        real_obj = DummyTypedNamedTuple(**class1_args)
+        self.assertTrue(dummy == real_obj)
+    
+
+# TestInlineNamedTuple = namedtuple('TestInlineNamedTuple', 'basic_int test_str')
+# aa.register(TestInlineNamedTuple)
     
 if __name__ == '__main__':
     unittest.main()

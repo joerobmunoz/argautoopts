@@ -13,7 +13,7 @@ def register_opts(
     optionable_obj: Union[object, NamedTuple],
     name: Optional[str] = None,
     ) -> None:
-    """_summary_
+    """Register your type, making it available to the front-end and resolver.
 
     Args:
         optionable_obj (Union[object, NamedTuple]): A decorated type to register
@@ -26,7 +26,6 @@ def register_opts(
     
     _type_is_registerable = partial(type_is_registerable, optionable_obj)
     reg_types = list(filter(_type_is_registerable, REGISTERABLE_TYPES))
-    breakpoint()
     
     # Registration assertions
     if len(reg_types) > 1:
