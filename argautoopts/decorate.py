@@ -24,6 +24,7 @@ def register_opts(
         ValueError: validation errors for registered types
     """
     
+    breakpoint()
     _type_is_registerable = partial(type_is_registerable, optionable_obj)
     reg_types = list(filter(_type_is_registerable, REGISTERABLE_TYPES))
     
