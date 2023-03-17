@@ -4,7 +4,7 @@ from typing import Any, List
 
 from ..registry import RegistryArg, RegisterableType
 
-class   (RegisterableType):
+class RegisterableType:
     def is_of_type(x:Any) -> bool:
         """Checks whether or not the type matches a namedtuple
         """
