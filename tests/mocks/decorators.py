@@ -1,6 +1,8 @@
 from collections import namedtuple
 from argautoopts.decorate import register_opts
 
+INLINE_NAMED_TUPLE_CLS_NAME = 'TestInlineNamedTuple'
+
 @register_opts
 class DummyClass(object):
     def __init__(self, test_num: int, test_str:str='test'):
@@ -33,5 +35,5 @@ class DummyTypedNamedTuple:
     basic_int: int
     test_str: str = 'test'
     
-DummyInlineNamedTuple = namedtuple('TestInlineNamedTuple', 'basic_int test_str')
+DummyInlineNamedTuple = namedtuple(INLINE_NAMED_TUPLE_CLS_NAME, 'basic_int test_str')
 register_opts(DummyInlineNamedTuple)

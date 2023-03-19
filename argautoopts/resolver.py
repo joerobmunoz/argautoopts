@@ -98,8 +98,8 @@ class IOCResolverType:
         for reg_arg in self.expected_registry[reg_name].named_args:
             if reg_arg.arg_name not in inflate_args and \
                 not reg_arg.has_default:
-                raise ResolveException(f'Parameter {reg_arg.arg_name}' \
-                    'for type {reg_name} has no supplied or default parameter')
+                raise ResolveException(f'Parameter {reg_arg.arg_name} ' \
+                    f'for type {reg_name} has no supplied or default parameter')
         
         expected_arg_keys = map(lambda x: x.arg_name, self.expected_registry[reg_name].named_args)
         if ignore_extra_params:

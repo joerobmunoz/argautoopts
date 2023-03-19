@@ -9,6 +9,7 @@ from tests.mocks.decorators import (
         DummyDataClass,
         DummyTypedNamedTuple,
         DummyInlineNamedTuple,
+        INLINE_NAMED_TUPLE_CLS_NAME,
 )
 
 from argautoopts.resolver import IOCResolverType, \
@@ -89,6 +90,24 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         self.assertRaises(RegistrationException, reg_unexpected_obj_fn)
         self.assertTrue('BadClass2' in _reg._registered)
     
+    def test_inline_namedtuples_fails_resolve(self):
+        """Inline named tuple requires all required params"""
+        # class1_name = 'DummyInlineNamedTuple'
+        class1_args = {'basic_int': 1}
+        _resolver = self.resolver.register(INLINE_NAMED_TUPLE_CLS_NAME,
+                                           class1_args)
+        _resolve_fn = lambda: self.resolver.resolve(DummyInlineNamedTuple)
+        self.assertRaises(ResolveException, _resolve_fn)
+        
+    def test_inline_namedtuples_resolve(self):
+        # class1_name = 'DummyInlineNamedTuple'
+        class1_args = {'basic_int': 1, 'test_str': 'test'}
+        _resolver = self.resolver.register(INLINE_NAMED_TUPLE_CLS_NAME,
+                                           class1_args)
+        dummy = self.resolver.resolve(DummyInlineNamedTuple)
+        real_obj = DummyInlineNamedTuple(**class1_args)
+        self.assertTrue(dummy == real_obj)
+        
     # def test_dataclasses_resolve(self):
     #     class1_name = 'TestDataClass'
     #     class1_args = {'basic_int': 1}
@@ -96,25 +115,6 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
     #     dummy = self.resolver.resolve(DummyDataClass)
     #     real_obj = DummyDataClass(**class1_args)
     #     self.assertTrue(dummy == real_obj)
-    
-    def test_inline_namedtuples_fails_resolve(self):
-        """Inline named tuple requires all required params"""
-        class1_name = 'DummyInlineNamedTuple'
-        class1_args = {'basic_int': 1}
-        breakpoint()
-        _resolver = self.resolver.register(class1_name, class1_args)
-        dummy = self.resolver.resolve(DummyInlineNamedTuple)
-        real_obj = DummyInlineNamedTuple(**class1_args)
-        self.assertTrue(dummy == real_obj)
-        
-    def test_inline_namedtuples_resolve(self):
-        class1_name = 'DummyInlineNamedTuple'
-        class1_args = {'basic_int': 1, 'test_str': 'test'}
-        breakpoint()
-        _resolver = self.resolver.register(class1_name, class1_args)
-        dummy = self.resolver.resolve(DummyInlineNamedTuple)
-        real_obj = DummyInlineNamedTuple(**class1_args)
-        self.assertTrue(dummy == real_obj)
     
     # def test_typed_namedtuples_resolve(self):
     #     class1_name = 'DummyTypedNamedTuple'
