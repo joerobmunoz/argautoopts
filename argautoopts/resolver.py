@@ -42,7 +42,7 @@ class IOCResolverType:
         
         if class_name not in self.expected_registry and not unsafe:
             raise RegistrationException('You cannot register a type ' \
-                f'{class_name} because it was not previously registered' \
+                f'{class_name} because it was not previously registered ' \
                 'and this was not marked as unsafe.')
 
         # Avoid polluting the front-end refs        

@@ -97,9 +97,19 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
     #     real_obj = DummyDataClass(**class1_args)
     #     self.assertTrue(dummy == real_obj)
     
-    def test_inline_namedtuples_resolve(self):
+    def test_inline_namedtuples_fails_resolve(self):
+        """Inline named tuple requires all required params"""
         class1_name = 'DummyInlineNamedTuple'
         class1_args = {'basic_int': 1}
+        breakpoint()
+        _resolver = self.resolver.register(class1_name, class1_args)
+        dummy = self.resolver.resolve(DummyInlineNamedTuple)
+        real_obj = DummyInlineNamedTuple(**class1_args)
+        self.assertTrue(dummy == real_obj)
+        
+    def test_inline_namedtuples_resolve(self):
+        class1_name = 'DummyInlineNamedTuple'
+        class1_args = {'basic_int': 1, 'test_str': 'test'}
         breakpoint()
         _resolver = self.resolver.register(class1_name, class1_args)
         dummy = self.resolver.resolve(DummyInlineNamedTuple)
