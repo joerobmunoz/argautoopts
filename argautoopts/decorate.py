@@ -42,11 +42,11 @@ def register_opts(
         raise ValueError(f'Duplicate object names registered for {OBJECT_REGISTRATION[name]} and {optionable_obj}')
 
     # Create registry object
-    args = reg_type.get_args(optionable_obj)
+    _args = reg_type.get_args(optionable_obj)
     item = RegistryItem(name=name,
                         reg_type=reg_type,
                         type=optionable_obj,
-                        named_args=args)
+                        named_args=_args)
 
     # Register object
     OBJECT_REGISTRATION[name] = item

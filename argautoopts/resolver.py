@@ -87,8 +87,8 @@ class IOCResolverType:
             raise ResolveException(f'Type was unexpected and must be registered before ' \
                 'attempting resolution.')
         if reg_name not in self._registered:
-            raise ResolveException(f'<{reg_name}> was expected, but must be registered ' \
-                'by the frontend before requesting objects.')
+            raise ResolveException(f'<{reg_name}> was decorated, but args must be ' \
+                'given to a frontend before requesting objects.')
 
         # Inflate a class with args
         inflate_args = self._registered[reg_name].copy()

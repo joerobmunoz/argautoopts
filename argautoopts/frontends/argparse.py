@@ -80,19 +80,18 @@ def extend_parser(parser: argparse.ArgumentParser,
         
     # Override parse_args to add to container registry
     parser.parse_args = decorate_parse_args(parser, OBJECT_REGISTRATION)
-    # TODO: Strict/required storage in dict
     
     return parser
 
 def decorate_parse_args(parser: argparse.ArgumentParser, OBJECT_REGISTRATION: Dict[str, RegistryItem]) -> argparse.Namespace:
     _parse_args = parser.parse_args
     def wrapper(*args, **kwargs):
-        args = _parse_args(*args, **kwargs)
+        _args = _parse_args(*args, **kwargs)
         
         # Register with IOC
-        _resolver = resolver_from_args(args, OBJECT_REGISTRATION)
+        _resolver = resolver_from_args(_args, OBJECT_REGISTRATION)
         
-        return args
+        return _args
     return wrapper
             
 def resolver_from_args(cli_args: argparse.Namespace, OBJECT_REGISTRATION: Dict[str, RegistryItem]) -> IOCResolverType:
@@ -101,7 +100,6 @@ def resolver_from_args(cli_args: argparse.Namespace, OBJECT_REGISTRATION: Dict[s
     Args:
         parser (argparse.ArgumentParser): _description_
     """
-    
     for class_name in vars(cli_args):
         # If it's a registerable type, register it
         if class_name not in OBJECT_REGISTRATION:
