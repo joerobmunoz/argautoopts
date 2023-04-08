@@ -53,6 +53,12 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         self.assertTrue('DummyClass' in args)
         self.assertTrue('DummyClass2' not in args)
         
+    # def test_all_required_types_are_not_none_after_frontend_parsing(self):
+    #     _cmd = ['--DummyClass', 
+    #             'test_num=1,test_str="test1b"',]
+    #     args = self.parser.parse_args(_cmd)  
+    #     self.assertRaises(SystemExit, command_with_help_flag)
+        
     # def test_config_requires_dummy(self):
     #     """When configured as a config file input, it should show Dummy Class options
     #     """

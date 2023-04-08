@@ -1,18 +1,11 @@
 from typing import Dict, Any
 
+
 from .registry import RegistryItem
 from .decorate import REGISTERABLE_TYPES, OBJECT_REGISTRATION
+from .errors import RegistrationException, ResolveException
 
 __OBJ_META__ = '__obj_meta__'
-
-class ArgAutoOptsException(Exception):
-    pass
-
-class ResolveException(ArgAutoOptsException):
-    pass
-
-class RegistrationException(ArgAutoOptsException):
-    pass
 
 class IOCResolverType:
     def __init__(self,

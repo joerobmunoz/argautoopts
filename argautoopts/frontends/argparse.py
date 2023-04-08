@@ -87,7 +87,7 @@ def decorate_parse_args(parser: argparse.ArgumentParser, OBJECT_REGISTRATION: Di
     _parse_args = parser.parse_args
     def wrapper(*args, **kwargs):
         _args = _parse_args(*args, **kwargs)
-        
+                
         # Register with IOC
         _resolver = resolver_from_args(_args, OBJECT_REGISTRATION)
         
@@ -100,6 +100,7 @@ def resolver_from_args(cli_args: argparse.Namespace, OBJECT_REGISTRATION: Dict[s
     Args:
         parser (argparse.ArgumentParser): _description_
     """
+    
     for class_name in vars(cli_args):
         # If it's a registerable type, register it
         if class_name not in OBJECT_REGISTRATION:

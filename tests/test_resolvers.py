@@ -12,10 +12,11 @@ from tests.mocks.decorators import (
         INLINE_NAMED_TUPLE_CLS_NAME,
 )
 
-from argautoopts.resolver import IOCResolverType, \
+from argautoopts.resolver import IOCResolverType
+from argautoopts.errors import (
     ResolveException, RegistrationException
-
-
+)
+    
 class TestDecoratedClassesShouldRegister(unittest.TestCase):
     def setUp(self):
         # Fake DummyClass is decorated/expected
