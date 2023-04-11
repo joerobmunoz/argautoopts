@@ -49,9 +49,9 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         
         _cmd = ['--DummyClass', 
                 'test_num=1,test_str="test1b"',]
-        args = self.parser.parse_args(_cmd)  
-        self.assertTrue('DummyClass' in args)
-        self.assertTrue('DummyClass2' not in args)
+        _args = self.parser.parse_args(_cmd)
+        self.assertTrue('DummyClass' in _args)
+        self.assertTrue('DummyClass2' not in _args)
         
     # def test_all_required_types_are_not_none_after_frontend_parsing(self):
     #     _cmd = ['--DummyClass', 

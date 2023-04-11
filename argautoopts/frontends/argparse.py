@@ -75,7 +75,7 @@ def extend_parser(parser: argparse.ArgumentParser,
             # Assert unique class names
             dest = class_key,
             type = _reflected_container_type, 
-            required = False,
+            required = True,
             nargs = 1)
         
     # Override parse_args to add to container registry
