@@ -3,12 +3,12 @@ import unittest
 
 from argautoopts.decorate import OBJECT_REGISTRATION
 from tests.mocks.decorators import (
-        DummyClass,
-        DummyClass2,
+        make_dummy_reg,
+        make_dummy2_reg,
+        make_dummydatacls_reg,
+        make_dummyinlinenamedtuple_reg,
+        make_dummytypednamedtuple_reg,
         NotDecoratedClass,
-        DummyDataClass,
-        DummyTypedNamedTuple,
-        DummyInlineNamedTuple,
         INLINE_NAMED_TUPLE_CLS_NAME,
 )
 
@@ -18,9 +18,10 @@ from argautoopts.errors import (
 )
     
 class TestDecoratedClassesShouldRegister(unittest.TestCase):
-    def setUp(self):
+    def setUpClass(self):
         # Fake DummyClass is decorated/expected
-        self.registered_dummy_class = OBJECT_REGISTRATION[DummyClass.__name__]
+        self.DummyClass = make_dummy_reg()
+        self.registered_dummy_class = OBJECT_REGISTRATION[self.DummyClass.__name__]
         self.resolver = IOCResolverType(OBJECT_REGISTRATION)
     
     def test_supplied_class_is_registered(self):
@@ -35,8 +36,8 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         class1_name = 'DummyClass'
         class1_args = {'test_num': 1, 'test_str': 'test1b'}
         _resolver = self.resolver.register(class1_name, class1_args)
-        dummy = self.resolver.resolve(DummyClass)
-        real_obj = DummyClass(**class1_args)
+        dummy = self.resolver.resolve(self.DummyClass)
+        real_obj = self.DummyClass(**class1_args)
         self.assertTrue(dummy == real_obj)
         
     def test_resolver_fails_with_wrong_args(self):
@@ -44,17 +45,17 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         class1_name = 'DummyClass'
         class1_args = {'XXXX': 1, 'test_str': 'test1b'}
         _resolver = self.resolver.register(class1_name, class1_args)
-        self.assertRaises(ResolveException, lambda: self.resolver.resolve(DummyClass))
+        self.assertRaises(ResolveException, lambda: self.resolver.resolve(self.DummyClass))
     
     def test_resolver_fails_with_wrong_args(self):
         """The resolver fails with extra args by default"""
         class1_name = 'DummyClass'
         class1_args = {'test_num': 1, 'XXX': 'test1b'}
         _resolver = self.resolver.register(class1_name, class1_args)
-        self.assertRaises(ResolveException, lambda: self.resolver.resolve(DummyClass, 
+        self.assertRaises(ResolveException, lambda: self.resolver.resolve(self.DummyClass, 
                                                             ignore_extra_params=False))
-        dummy = self.resolver.resolve(DummyClass, ignore_extra_params=True)
-        real_obj = DummyClass(test_num=1)
+        dummy = self.resolver.resolve(self.DummyClass, ignore_extra_params=True)
+        real_obj = self.DummyClass(test_num=1)
         self.assertTrue(dummy == real_obj)
         
     def test_resolver_can_create_registered_objects_with_defaults(self):
@@ -62,8 +63,8 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         class1_name = 'DummyClass'
         class1_args = {'test_num': 1}
         _resolver = self.resolver.register(class1_name, class1_args)
-        dummy = self.resolver.resolve(DummyClass)
-        real_obj = DummyClass(**class1_args)
+        dummy = self.resolver.resolve(self.DummyClass)
+        real_obj = self.DummyClass(**class1_args)
         self.assertTrue(dummy == real_obj)
     
     def test_resolve_fails_when_not_expected(self):
@@ -73,7 +74,7 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         
     def test_resolver_fails_when_not_registered(self):
         """The resolver must have expected classes be registered first"""
-        resolve_dummy_obj_fn = lambda: self.resolver.resolve(DummyClass)
+        resolve_dummy_obj_fn = lambda: self.resolver.resolve(self.DummyClass)
         self.assertRaises(ResolveException, resolve_dummy_obj_fn)
      
     def test_resolver_cant_register_undecorated_classes(self):

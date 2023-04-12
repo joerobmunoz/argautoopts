@@ -3,12 +3,20 @@ import unittest, argparse
 
 from argautoopts.decorate import OBJECT_REGISTRATION
 from argautoopts.frontends.argparse import extend_parser
-from tests.mocks.decorators import DummyClass
+from tests.mocks.decorators import (
+    make_dummy_reg,
+    make_dummy2_reg,
+    make_dummydatacls_reg,
+    make_dummyinlinenamedtuple_reg,
+    make_dummytypednamedtuple_reg
+)
 
 
 class TestDecoratedClassesShouldRegister(unittest.TestCase):
-    def setUp(self):
-        self.registered_dummy_class = OBJECT_REGISTRATION[DummyClass.__name__]
+    def setUpClass(self):
+        self.DummyClass = make_dummy_reg()
+        print('CALLED')
+        self.registered_dummy_class = OBJECT_REGISTRATION[self.DummyClass.__name__]
         self.parser = argparse.ArgumentParser()
         self.parser = extend_parser(self.parser)
         
@@ -27,7 +35,8 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         """When configured as a CLI, it should show Dummy Class options
         """
         _h = self.parser.format_help()
-        self.assertTrue(DummyClass.__name__ in _h)
+        breakpoint()
+        self.assertTrue(self.DummyClass.__name__ in _h)
         
     def test_cli_parses_subcommands(self):
         """CLI can recognize 2 DI classes at once
@@ -50,6 +59,7 @@ class TestDecoratedClassesShouldRegister(unittest.TestCase):
         _cmd = ['--DummyClass', 
                 'test_num=1,test_str="test1b"',]
         _args = self.parser.parse_args(_cmd)
+        breakpoint()
         self.assertTrue('DummyClass' in _args)
         self.assertTrue('DummyClass2' not in _args)
         

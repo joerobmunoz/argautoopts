@@ -37,7 +37,7 @@ def extend_parser(parser: argparse.ArgumentParser,
         # each DI item gets its own option
         cls_help=f"{class_key} parameters:\n"
         expected_param_pattern = ""
-        for reg_arg in registry_item.named_args:
+        for reg_arg in registry_item. named_args:
             if len(expected_param_pattern) > 1:
                 expected_param_pattern += ","
                 
@@ -75,7 +75,7 @@ def extend_parser(parser: argparse.ArgumentParser,
             # Assert unique class names
             dest = class_key,
             type = _reflected_container_type, 
-            required = True,
+            # required = True,
             nargs = 1)
         
     # Override parse_args to add to container registry
