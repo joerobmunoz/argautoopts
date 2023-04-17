@@ -1,9 +1,12 @@
+import pytest
+
 from collections import namedtuple
-from argautoopts.decorate import register_opts
+from argautoopts.decorate import OBJECT_REGISTRATION, register_opts
 
 INLINE_NAMED_TUPLE_CLS_NAME = 'TestInlineNamedTuple'
 
-def make_dummy_reg():    
+@pytest.fixture
+def dummy_reg():    
     @register_opts
     class DummyClass(object):
         def __init__(self, test_num: int, test_str:str='test'):
@@ -14,16 +17,23 @@ def make_dummy_reg():
             """For test assertions"""        
             return self.__dict__ == other.__dict__
         
-    return DummyClass
+    yield DummyClass
+    
+    # Test cleanup
+    del(OBJECT_REGISTRATION[DummyClass.__name__])
 
-def make_dummy2_reg():
+@pytest.fixture
+def dummy2_reg():
     @register_opts
     class DummyClass2(object):
         def __init__(self, test_num: int, test_str:str='test'):
             self.test_num = test_num
             self.test_str = test_str
             
-    return DummyClass2
+    yield DummyClass2
+    
+    # Test cleanup
+    del(OBJECT_REGISTRATION[DummyClass2.__name__])
 
 # Make this for every test
 class NotDecoratedClass(object):
@@ -31,23 +41,35 @@ class NotDecoratedClass(object):
         self.test_num = test_num
         self.test_str = test_str
 
-def make_dummydatacls_reg():
+@pytest.fixture
+def dummydatacls_reg():
     @register_opts
     class DummyDataClass:
         basic_int: int
         test_str: str = 'test'
         
-    return DummyDataClass
+    yield DummyDataClass
     
-def make_dummytypednamedtuple_reg():
+    # Test cleanup
+    del(OBJECT_REGISTRATION[DummyDataClass.__name__])
+    
+@pytest.fixture
+def dummytypednamedtuple_reg():
     @register_opts
     class DummyTypedNamedTuple:
         basic_int: int
         test_str: str = 'test'
         
-    return DummyTypedNamedTuple
+    yield DummyTypedNamedTuple
+    
+    # Test cleanup
+    del(OBJECT_REGISTRATION[DummyTypedNamedTuple.__name__])
 
-def make_dummyinlinenamedtuple_reg():
+@pytest.fixture
+def dummyinlinenamedtuple_reg():
     DummyInlineNamedTuple = namedtuple(INLINE_NAMED_TUPLE_CLS_NAME, 'basic_int test_str')
     register_opts(DummyInlineNamedTuple)
-    return DummyInlineNamedTuple
+    yield DummyInlineNamedTuple
+    
+    # Test cleanup
+    del(OBJECT_REGISTRATION[DummyInlineNamedTuple.__name__])
