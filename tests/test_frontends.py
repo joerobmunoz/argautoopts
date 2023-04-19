@@ -1,4 +1,4 @@
-from argautoopts.errors import RegistrationException
+from argautoopts.errors import ResolveException
 import pytest
 
 
@@ -53,7 +53,7 @@ def test_cli_parses_subcommands(parser, dummy_reg, dummy2_reg):
     assert('DummyClass' in args)
     assert('DummyClass2' in args)
     
-def test_registered_item_is_omitted_from_args(parser, dummy_reg):
+def test_registered_item_is_omitted_from_args(parser, dummy_reg, dummy2_reg):
     """An item should not show up up as an attribute in the parser
     obj if it has no parameters provided. We do want them to force
     an error if it's in strict mode.
@@ -67,14 +67,15 @@ def test_registered_item_is_omitted_from_args(parser, dummy_reg):
     assert('DummyClass' in _args)
     assert('DummyClass2' not in _args)
         
-def test_throws_on_missing_required_type(parser, dummy_reg, dummy2_reg):
-    """All decorated types must be accounted for. None of this sloppy "maybe" stuff. This isn't Haskell."""
-    _cmd = ['--DummyClass', 
-            'test_num=1,test_str="test1b"',]
-    # Parser must be extended after the fixture is suppled
-    parser = extend_parser(parser)
-    with pytest.raises(RegistrationException):
-        args = parser.parse_args(_cmd)
+# This is deprecated until we know how multiple front-ends will work.
+# def test_throws_on_missing_required_type(parser, dummy_reg, dummy2_reg):
+#     """All decorated types must be accounted for. None of this sloppy "maybe" stuff. This isn't Haskell."""
+#     _cmd = ['--DummyClass', 
+#             'test_num=1,test_str="test1b"',]
+#     # Parser must be extended after the fixture is suppled
+#     parser = extend_parser(parser)
+#     with pytest.raises(ResolveException):
+#         args = parser.parse_args(_cmd)
     
     # def test_config_requires_dummy(self):
     #     """When configured as a config file input, it should show Dummy Class options

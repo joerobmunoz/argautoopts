@@ -1,4 +1,5 @@
 import argparse
+from copy import copy
 import inspect
 
 from collections import defaultdict
@@ -83,31 +84,43 @@ def extend_parser(parser: argparse.ArgumentParser,
     
     return parser
 
-def decorate_parse_args(parser: argparse.ArgumentParser, OBJECT_REGISTRATION: Dict[str, RegistryItem]) -> argparse.Namespace:
+def decorate_parse_args(parser: argparse.ArgumentParser,
+                        OBJECT_REGISTRATION: Dict[str, RegistryItem],
+                        ignore_none: bool = True) -> argparse.Namespace:
     _parse_args = parser.parse_args
     def wrapper(*args, **kwargs):
         _args = _parse_args(*args, **kwargs)
                 
         # Register with IOC
-        _resolver = resolver_from_args(_args, OBJECT_REGISTRATION)
+        _args, _resolver = resolver_from_args(_args,
+                                       OBJECT_REGISTRATION,
+                                       ignore_none=ignore_none)
         
         return _args
     return wrapper
             
-def resolver_from_args(cli_args: argparse.Namespace, OBJECT_REGISTRATION: Dict[str, RegistryItem]) -> IOCResolverType:
+def resolver_from_args(cli_args: argparse.Namespace,
+                       OBJECT_REGISTRATION: Dict[str, RegistryItem],
+                       ignore_none: bool = True) -> IOCResolverType:
     """Create a fully-registered resolver object from the parser
 
     Args:
-        parser (argparse.ArgumentParser): _description_
+        parser (argparse.ArgumentParser): The argparse parser
+        OBJECT_REGISTRATION: singleton dict of registrations
+        ignore_none (bool): Do not populate empty --options
     """
-    
+    clean_cli_args = copy(cli_args)
     for class_name in vars(cli_args):
         # If it's a registerable type, register it
         if class_name not in OBJECT_REGISTRATION:
             continue
         # Must have args
         _cls_args = getattr(cli_args, class_name)
-        if not _cls_args:
+        
+        if not _cls_args and class_name in OBJECT_REGISTRATION:
+            # Argparse will keep the key of any --option we
+            # previously created. Remove it here.
+            clean_cli_args.__dict__.pop(class_name)
             continue
         
         # Argparse uses a list of args
@@ -115,4 +128,4 @@ def resolver_from_args(cli_args: argparse.Namespace, OBJECT_REGISTRATION: Dict[s
         _r = resolver.register(class_name, _cls_args_dict)
         
     # breakpoint()
-    return resolver
+    return clean_cli_args, resolver
