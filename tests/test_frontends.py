@@ -66,6 +66,28 @@ def test_registered_item_is_omitted_from_args(parser, dummy_reg, dummy2_reg):
     _args = parser.parse_args(_cmd)
     assert('DummyClass' in _args)
     assert('DummyClass2' not in _args)
+
+def test_registration_reqs_frontends(dummy_reg_env):
+    """
+    Registration can target a front-end, instead of the global scope.
+    By default, the CLI inherits unscoped variables. Manifests differently
+    for different front ends:
+    * CLI: prompts for in-scope vars
+    * Env: reads globally
+    * Remote Calls: only fetches in-scope
+    
+    When resolving, we can try "optimistic[ally]" to grab from parent
+    scopes.
+    """
+    _cmd = ['--DummyClass', 
+            'test_num=1,test_str="test1b"',]
+    # Parser must be extended after the fixture is suppled
+    parser = extend_parser(parser)
+    _args = parser.parse_args(_cmd)
+    assert('DummyClass' not in _args, 'Env variable scoped \
+           should not show in cli help')
+    
+        
         
 # This is deprecated until we know how multiple front-ends will work.
 # def test_throws_on_missing_required_type(parser, dummy_reg, dummy2_reg):
