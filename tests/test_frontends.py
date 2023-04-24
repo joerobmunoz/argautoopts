@@ -84,6 +84,7 @@ def test_registration_reqs_frontends(dummy_reg_env):
     # Parser must be extended after the fixture is suppled
     parser = extend_parser(parser)
     _args = parser.parse_args(_cmd)
+    breakpoint()
     assert('DummyClass' not in _args, 'Env variable scoped \
            should not show in cli help')
     

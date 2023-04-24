@@ -5,11 +5,18 @@ import inspect
 from collections import defaultdict
 from typing import Dict, List
 
+from .basetypes import FrontEndType
+
 from ..registry import RegistryItem
 from ..decorate import OBJECT_REGISTRATION
 from ..resolver import IOCResolverType, resolver
 
 __EXT_SUBCMD_STORAGE__ = '__ext_subcmds__'
+
+class ArgparseFrontend(FrontEndType):
+    def on_decorate():
+        raise NotImplementedError()
+
 
 def create_parser(*args, **kwargs):
     """Create a simple parser object with registered objects

@@ -5,18 +5,22 @@ from .registry import (
     RegisterableType, RegistryItem, type_is_registerable)
 
 from .registerable_types import *
+from .frontends.basetypes import FrontEndType
+from .frontends.argparse import ArgparseFrontend
 
 REGISTERABLE_TYPES = RegisterableType.__subclasses__()
 OBJECT_REGISTRATION = {}
 
 def register_opts(
     optionable_obj: Union[object, NamedTuple],
+    frontend: FrontEndType = ArgparseFrontend,
     name: Optional[str] = None,
     ) -> None:
     """Register your type, making it available to the front-end and resolver.
 
     Args:
         optionable_obj (Union[object, NamedTuple]): A decorated type to register
+        frontend: Interfaces = The front-end type to gather it. Default: argparse cli,
         name (Optional[str], optional): Override the type name to be registered.
                 Defaults to None.
 
