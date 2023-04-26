@@ -2,6 +2,7 @@ import pytest
 
 from collections import namedtuple
 from argautoopts.decorate import OBJECT_REGISTRATION, register_opts
+from argautoopts.frontends.usertypes import Interfaces
 
 INLINE_NAMED_TUPLE_CLS_NAME = 'TestInlineNamedTuple'
 
@@ -73,3 +74,43 @@ def dummyinlinenamedtuple_reg():
     
     # Test cleanup
     del(OBJECT_REGISTRATION[DummyInlineNamedTuple.__name__])
+    
+    
+# Frontends
+from argautoopts.frontends.argparse import ArgparseFrontend
+
+@pytest.fixture
+def dummy_reg_frontend():    
+    @register_opts(frontend=ArgparseFrontend)
+    class DummyClass(object):
+        def __init__(self, test_num: int, test_str:str='test'):
+            self.test_num = test_num
+            self.test_str = test_str
+                
+        def __eq__(self, other):
+            """For test assertions"""        
+            return self.__dict__ == other.__dict__
+        
+    yield DummyClass
+    
+    # Test cleanup
+    del(OBJECT_REGISTRATION[DummyClass.__name__])
+    
+@pytest.fixture
+def dummy2_reg_frontend():    
+    @register_opts(frontend=ArgparseFrontend)
+    class Dummy2Class(object):
+        def __init__(self, test_num: int, test_str:str='test'):
+            self.test_num = test_num
+            self.test_str = test_str
+                
+        def __eq__(self, other):
+            """For test assertions"""        
+            return self.__dict__ == other.__dict__
+        
+    yield Dummy2Class
+    
+    # Test cleanup
+    del(OBJECT_REGISTRATION[Dummy2Class.__name__])
+
+

@@ -13,6 +13,8 @@ from tests.mocks.decorators import (
         dummytypednamedtuple_reg,
         NotDecoratedClass,
         INLINE_NAMED_TUPLE_CLS_NAME,
+        dummy_reg_frontend,
+        dummy2_reg_frontend,
 )
 from tests.mocks.resolve import resolver
 from tests.mocks.frontends import parser
@@ -89,6 +91,7 @@ def test_registration_reqs_frontends(dummy_reg_env):
            should not show in cli help')
     
         
+def test_decorators_req_frontend(dummy2)
         
 # This is deprecated until we know how multiple front-ends will work.
 # def test_throws_on_missing_required_type(parser, dummy_reg, dummy2_reg):
