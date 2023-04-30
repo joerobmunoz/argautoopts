@@ -28,6 +28,8 @@ def register_opts(
         ValueError: validation errors for registered types
     """
     
+    # Register type to front-end
+    
     _type_is_registerable = partial(type_is_registerable, optionable_obj)
     reg_types = list(filter(_type_is_registerable, REGISTERABLE_TYPES))
     
@@ -50,7 +52,9 @@ def register_opts(
     item = RegistryItem(name=name,
                         reg_type=reg_type,
                         type=optionable_obj,
-                        named_args=_args)
+                        named_args=_args,
+                        frontend=frontend,
+                        )
 
     # Register object
     OBJECT_REGISTRATION[name] = item

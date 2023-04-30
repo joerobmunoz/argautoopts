@@ -1,6 +1,8 @@
 from abc import ABC, abstractclassmethod
 from typing import Any, List, NamedTuple
 
+from frontends.basetypes import FrontEndType
+
 class RegistryArg(NamedTuple):
     arg_name:Any      # Name of the argument
     type:Any         # Type hint
@@ -31,10 +33,12 @@ class RegisterableType(ABC):
         pass
     
 class RegistryItem(NamedTuple):
-    name:str
-    reg_type:RegisterableType
+    name: str
+    reg_type: RegisterableType
     type: Any
-    named_args:List[RegistryArg]
+    named_args: List[RegistryArg]
+    frontend: FrontEndType
+    
     
 def type_is_registerable(obj: Any, t: RegisterableType) -> bool:
     return t.is_of_type(obj)
